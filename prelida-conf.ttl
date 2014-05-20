@@ -56,58 +56,22 @@ easy:lda a api:ListEndpoint
         [ api:where "ed:51644 ?item ?o "
         ]	
 	.	
+
+easy:dataset
+        a                   api:ItemEndpoint;
+        api:uriTemplate     "/dataset/{id}";
+        api:itemTemplate    "https://easy.dans.knaw.nl/ui/datasets/id/easy-dataset:{id}";
+        api:viewer          api:basicViewer, api:describeViewer, api:labelledDescribeViewer;
+        api:defaultViewer   api:describeViewer;
+        .
+
+
 #
 # This XSLT formatter produces rich HTML from the viewer properties.
 #
 
-gm:HtmlFormatter a api:XsltFormatter 
-	; api:name "html" 
-	; api:mimeType "text/html; charset=utf-8" 
-	; api:stylesheet "lda-assets/xslt/result-osm-trimmed.xsl"
-	# ; elda:shortnameMode elda:roundTrip
-	.
-
-gm:BoardGame a rdfs:Class
-	; rdfs:label "Board Game"
-	; api:label "BoardGame"
-	.
-	
 dc:subject a rdfs:Class
 	; rdfs:label "Board Game"
 	; api:label "BoardGame"
 	.
 	
-gm:players a rdf:Property
-	; api:label "players"
-	; rdfs:range xsd:int
-	.
-	
-gm:designed-by a rdf:Property
-	; api:label "designedBy"
-	.
-	
-gm:designer-of a rdf:Property
-	; api:label "designerOf"
-	.
-	
-gm:pubDate a rdf:Property
-	; api:label "publicationDate"
-	; rdfs:range xsd:integer
-	.
-	
-gm:title a rdf:Property
-	; api:label "title"
-	.
-		
-gm:pubYear a rdf:Property
-	; api:label "publicationYear"
-	; rdfs:range xsd:integer
-    ; rdfs:comment "The subject is some published entity, the object is the year of its publication."
-    ; rdfs:range xsd:integer
-	.
-    
-gm:playTimeMinutes a rdf:Property
-	; api:label "playTimeMinutes"
-	; rdfs:label "playTimeMinutes"
-	; rdfs:range xsd:integer
-	.	
