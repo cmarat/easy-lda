@@ -1,0 +1,113 @@
+#
+# A hello-prelida config. 
+#
+
+# Assorted prefix declarations. Some of them are for the structuring
+# of the API config, others are for the vocabulary definitions.
+#
+
+@prefix api:                <http://purl.org/linked-data/api/vocab#> .
+@prefix dct:				<http://purl.org/dc/terms/> .
+
+@prefix rdf:                <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:               <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:                <http://www.w3.org/2001/XMLSchema#> .
+
+# The elda namespace/prefix is for Elda extensions to the LDA specification.
+@prefix elda:               <http://www.epimorphics.com/vocabularies/lda#> .
+
+# Prefix for example-local entities.
+@prefix gm:					<http://epimorphics.com/public/vocabulary/games.ttl#>.
+@prefix dc: 				<http://purl.org/dc/elements/1.1/>.
+@prefix ed:					<https://easy.dans.knaw.nl/ui/datasets/id/easy-dataset:>.
+@prefix easy:				<https://easy.dans.knaw.nl>.
+
+# ---------------------------------------------------------------------
+# API config
+
+easy:prelida a api:API 
+	; rdfs:label "Prelida LDA -- speeltuin"@en
+	; api:sparqlEndpoint <http://lod.cedar-project.nl:8080/sparql/easy>
+	# ; api:defaultViewer api:labelledDescribeViewer
+	; api:defaultViewer api:labelledDescribeViewer
+	; api:viewer [a api:Viewer; api:name "none"; api:properties ""]
+	; api:defaultFormatter gm:HtmlFormatter 
+    ; api:formatter
+        [a elda:FeedFormatter
+        ; api:name "atom"
+        ; elda:className "com.epimorphics.lda.renderers.FeedRendererFactory"
+        ; api:mimeType "application/atom+xml"
+        #; elda:velocityTemplate "page-shell.vm"
+        ]
+	; api:endpoint easy:lda 
+	.
+	
+# Endpoint definition	
+	
+easy:lda a api:ListEndpoint 
+	; rdfs:label "EASY" 
+	; api:uriTemplate "/easy" 
+	#; api:selector [api:filter "type=BoardGame"; api:sort "label"]
+	#; api:selector [api:filter "type=subject"; api:sort "label"]
+	#; api:selector 
+    #    [ api:where "?item dc:subject 'food'"
+    #    ]
+    ; api:selector 
+        [ api:where "ed:51644 ?item ?o "
+        ]	
+	.	
+#
+# This XSLT formatter produces rich HTML from the viewer properties.
+#
+
+gm:HtmlFormatter a api:XsltFormatter 
+	; api:name "html" 
+	; api:mimeType "text/html; charset=utf-8" 
+	; api:stylesheet "lda-assets/xslt/result-osm-trimmed.xsl"
+	# ; elda:shortnameMode elda:roundTrip
+	.
+
+gm:BoardGame a rdfs:Class
+	; rdfs:label "Board Game"
+	; api:label "BoardGame"
+	.
+	
+dc:subject a rdfs:Class
+	; rdfs:label "Board Game"
+	; api:label "BoardGame"
+	.
+	
+gm:players a rdf:Property
+	; api:label "players"
+	; rdfs:range xsd:int
+	.
+	
+gm:designed-by a rdf:Property
+	; api:label "designedBy"
+	.
+	
+gm:designer-of a rdf:Property
+	; api:label "designerOf"
+	.
+	
+gm:pubDate a rdf:Property
+	; api:label "publicationDate"
+	; rdfs:range xsd:integer
+	.
+	
+gm:title a rdf:Property
+	; api:label "title"
+	.
+		
+gm:pubYear a rdf:Property
+	; api:label "publicationYear"
+	; rdfs:range xsd:integer
+    ; rdfs:comment "The subject is some published entity, the object is the year of its publication."
+    ; rdfs:range xsd:integer
+	.
+    
+gm:playTimeMinutes a rdf:Property
+	; api:label "playTimeMinutes"
+	; rdfs:label "playTimeMinutes"
+	; rdfs:range xsd:integer
+	.	
