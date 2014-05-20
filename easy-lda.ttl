@@ -31,7 +31,7 @@ easy:prelida a api:API
 	# ; api:defaultViewer api:labelledDescribeViewer
 	; api:defaultViewer api:labelledDescribeViewer
 	; api:viewer [a api:Viewer; api:name "none"; api:properties ""]
-	; api:defaultFormatter gm:HtmlFormatter 
+	; api:defaultFormatter _:HtmlFormatter 
     ; api:formatter
         [a elda:FeedFormatter
         ; api:name "atom"
@@ -39,14 +39,14 @@ easy:prelida a api:API
         ; api:mimeType "application/atom+xml"
         #; elda:velocityTemplate "page-shell.vm"
         ]
-	; api:endpoint easy:lda 
+	; api:endpoint easy:lda, easy:dataset
 	.
 	
 # Endpoint definition	
 	
 easy:lda a api:ListEndpoint 
 	; rdfs:label "EASY" 
-	; api:uriTemplate "/easy" 
+	; api:uriTemplate "/easy"
 	#; api:selector [api:filter "type=BoardGame"; api:sort "label"]
 	#; api:selector [api:filter "type=subject"; api:sort "label"]
 	#; api:selector 
@@ -61,9 +61,15 @@ easy:dataset
         a                   api:ItemEndpoint;
         api:uriTemplate     "/dataset/{id}";
         api:itemTemplate    "https://easy.dans.knaw.nl/ui/datasets/id/easy-dataset:{id}";
-        api:viewer          api:basicViewer, api:describeViewer, api:labelledDescribeViewer;
-        api:defaultViewer   api:describeViewer;
+#        api:viewer          api:basicViewer;
+#        api:viewer          api:basicViewer, api:describeViewer, api:labelledDescribeViewer;
+        api:defaultViewer   _:easyViewer;
         .
+
+# This doesn't work yet
+_:easyViewer a api:Viewer ;
+  api:name "easy" ;
+  api:template "?item ?p ?v" .
 
 
 #
@@ -75,3 +81,9 @@ dc:subject a rdfs:Class
 	; api:label "BoardGame"
 	.
 	
+_:HtmlFormatter a api:XsltFormatter 
+	; api:name "html" 
+	; api:mimeType "text/html; charset=utf-8" 
+	; api:stylesheet "lda-assets/xslt/result-osm-trimmed.xsl"
+	# ; elda:shortnameMode elda:roundTrip
+	.
