@@ -1,89 +1,65 @@
-#
-# A hello-prelida config. 
-#
+@prefix api:	<http://purl.org/linked-data/api/vocab#> .
+@prefix dct:	<http://purl.org/dc/terms/> .
 
-# Assorted prefix declarations. Some of them are for the structuring
-# of the API config, others are for the vocabulary definitions.
-#
+@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
 
-@prefix api:                <http://purl.org/linked-data/api/vocab#> .
-@prefix dct:				<http://purl.org/dc/terms/> .
-
-@prefix rdf:                <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rdfs:               <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xsd:                <http://www.w3.org/2001/XMLSchema#> .
-
-# The elda namespace/prefix is for Elda extensions to the LDA specification.
-@prefix elda:               <http://www.epimorphics.com/vocabularies/lda#> .
-
-# Prefix for example-local entities.
-@prefix gm:					<http://epimorphics.com/public/vocabulary/games.ttl#>.
-@prefix dc: 				<http://purl.org/dc/elements/1.1/>.
-@prefix ed:					<https://easy.dans.knaw.nl/ui/datasets/id/easy-dataset:>.
-@prefix easy:				<https://easy.dans.knaw.nl>.
+@prefix elda:	<http://www.epimorphics.com/vocabularies/lda#> .
+@prefix dc:		<http://purl.org/dc/elements/1.1/> .
+@prefix ed:		<https://easy.dans.knaw.nl/ui/datasets/id/easy-dataset:> .
+@prefix spec:	<http://lda.cmarat.eu/api-config#easy> .
 
 # ---------------------------------------------------------------------
 # API config
 
-easy:prelida a api:API 
-	; rdfs:label "Prelida LDA -- speeltuin"@en
+spec:api a api:API 
+	; rdfs:label "EASY LDA"@en
 	; api:sparqlEndpoint <http://lod.cedar-project.nl:8080/sparql/easy>
-	# ; api:defaultViewer api:labelledDescribeViewer
-	; api:defaultViewer api:labelledDescribeViewer
-	; api:viewer [a api:Viewer; api:name "none"; api:properties ""]
-	; api:defaultFormatter _:HtmlFormatter 
-    ; api:formatter
-        [a elda:FeedFormatter
-        ; api:name "atom"
-        ; elda:className "com.epimorphics.lda.renderers.FeedRendererFactory"
-        ; api:mimeType "application/atom+xml"
-        #; elda:velocityTemplate "page-shell.vm"
-        ]
-	; api:endpoint easy:lda, easy:dataset
+	; api:maxPageSize 100
+	; api:defaultPageSize 10 
+	; api:defaultViewer api:basicViewer
+	; api:defaultFormatter spec:HtmlFormatter 
+	; api:endpoint spec:browse, spec:dataset
 	.
 	
-# Endpoint definition	
-	
-easy:lda a api:ListEndpoint 
+# Endpoint definitions	
+spec:browse a api:ListEndpoint 
 	; rdfs:label "EASY" 
-	; api:uriTemplate "/easy"
-	#; api:selector [api:filter "type=BoardGame"; api:sort "label"]
-	#; api:selector [api:filter "type=subject"; api:sort "label"]
-	#; api:selector 
-    #    [ api:where "?item dc:subject 'food'"
-    #    ]
-    ; api:selector 
-        [ api:where "ed:51644 ?item ?o "
-        ]	
+	; api:uriTemplate "/browse"
+	; api:selector [ 
+		api:where """ ?item dc:type "Dataset" """
+	  ]	
 	.	
 
-easy:dataset
-        a                   api:ItemEndpoint;
-        api:uriTemplate     "/dataset/{id}";
-        api:itemTemplate    "https://easy.dans.knaw.nl/ui/datasets/id/easy-dataset:{id}";
-#        api:viewer          api:basicViewer;
-#        api:viewer          api:basicViewer, api:describeViewer, api:labelledDescribeViewer;
-        api:defaultViewer   _:easyViewer;
-        .
-
-# This doesn't work yet
-_:easyViewer a api:Viewer ;
-  api:name "easy" ;
-  api:template "?item ?p ?v" .
-
-
-#
-# This XSLT formatter produces rich HTML from the viewer properties.
-#
-
-dc:subject a rdfs:Class
-	; rdfs:label "Board Game"
-	; api:label "BoardGame"
+spec:dataset a api:ItemEndpoint
+	; api:uriTemplate "/dataset/{id}"
+	; api:itemTemplate "https://easy.dans.knaw.nl/ui/datasets/id/easy-dataset:{id}"
+	; api:defaultViewer spec:basicDatasetViewer
 	.
-	
-_:HtmlFormatter a api:XsltFormatter 
+
+spec:basicDatasetViewer
+  a api:Viewer ;
+  api:name "basic" ;
+  api:properties "title,creator,contributor,date,format,language,rights,subject,description,relation,source" ;
+#  api:properties "*" ;
+  .
+
+spec:HtmlFormatter a api:XsltFormatter 
 	; api:name "html" 
 	; api:mimeType "text/html; charset=utf-8" 
-	; api:stylesheet "lda-assets/xslt/result-osm-trimmed.xsl"
-	# ; elda:shortnameMode elda:roundTrip
+	; api:stylesheet "lda-assets/xslt/result-osm.xsl"
 	.
+
+dc:title api:label "title" .
+dc:creator  api:label "creator" .
+dc:contributor  api:label "contributor" .
+dc:date  api:label "date" .
+dc:description  api:label "description" .
+dc:format  api:label "format" .
+dc:language  api:label "language" .
+dc:relation  api:label "relation" .
+dc:rights  api:label "rights" .
+dc:source  api:label "source" .
+dc:subject  api:label "subject" .
+
